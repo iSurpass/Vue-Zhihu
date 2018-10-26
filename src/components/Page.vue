@@ -58,7 +58,7 @@ export default {
     return {
       loadMoring:true,
       loading : false,
-      refreshMoring:true,
+      refreshMoring:false,
       refreshing:false,
       zhihus:zhihus,
       updateData:updateData,
@@ -119,7 +119,7 @@ export default {
       this.count++;
       setTimeout(()=>function(){
         this.getData();
-        this.loading = false;
+        this.refreshing = false;
       },1000)
     },
     nextPageData:function(){

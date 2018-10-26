@@ -105,7 +105,7 @@ export default {
       let position = pageHeight - viewHeight - scrollHeight;
       if(position < 20){
         this.nextPageData();
-      }else if(position>3260){
+      }else if(position<3260){
         this.refreshData();
       }
     },

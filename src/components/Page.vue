@@ -1,12 +1,13 @@
 <template>
   <div class="desktop">
-    <Content1 v-for="item in zhihus" :key="item.about" :zhihu="item"></Content1>
+    <div class="has-text-centered" v-show="refreshMoring">
+      正在努力刷新中~~
+    </div>
+    <Content1 v-for="item in page.zhihus" :key="item.index" :zhihu="item"></Content1>
     <div class="has-text-centered" v-show="loadMoring">
       正在加载...
     </div>
   </div>
-    
-  
 </template>
 
 <script>
@@ -19,6 +20,7 @@ export default {
     let zhihus = [];
     for (let i = 0; i < 30; i++) {
       zhihus.push({
+        index:i,
         about: "热门内容,来自:社交网络",
         icon:
           "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3797481993,1929347741&fm=27&gp=0.jpg",
@@ -34,16 +36,39 @@ export default {
         comments: 2403 + 2300 * i
       });
     }
+    let updateData = [];
+    for(let i=0;i<5;i++){
+      updateData.push({
+        index:100*i,
+         about: "热门内容,来自:NBA体育",
+        icon:
+          "http://img1.imgtn.bdimg.com/it/u=2533624605,2851085564&fm=26&gp=0.jpg",
+        nickName: "小登登" + i,
+        question: "2018-2019赛季火箭能否再次与勇士抗衡?",
+        img:
+          "http://img2.imgtn.bdimg.com/it/u=2772659149,246717439&fm=26&gp=0.jpg",
+        infor:
+          "用" +
+          i +
+          "条数据说明一切！拿到上赛季MVP的哈登必定率队与勇士会师西决！",
+        stars: 34800 + 1000 * i,
+        comments: 5603 + 2300 * i
+      });
+    }
     return {
       loadMoring:true,
       loading : false,
+      refreshMoring:true,
+      refreshing:false,
       zhihus:zhihus,
+      updateData:updateData,
+      count:1,
       page: {
         totalCount: 0,
         totalPage: 0,
         pageNum: 1,
         pageSize: 10,
-        zhihus: []
+        zhihus: [],
       }
     };
   },
@@ -80,11 +105,26 @@ export default {
       let position = pageHeight - viewHeight - scrollHeight;
       if(position < 20){
         this.nextPageData();
+      }else if(position>20){
+        this.refreshData();
       }
     },
+    refreshData:function(){
+      if(this.refreshing){
+        return;
+      }
+      this.refreshing = true;
+      let updateData = this.updateData[this.count];
+      this.page.zhihus.unshift(updateData);
+      this.count++;
+      setTimeout(()=>function(){
+        this.getData();
+        this.loading = false;
+      },1000)
+    },
     nextPageData:function(){
-      if(this.page.pageNum===this.totalPage){
-        this.loadMoreing =  false;
+      if(this.page.pageNum===this.page.totalPage){
+        this.loadMoring =  false;
         return;
       }
       if(this.loading){
@@ -102,7 +142,7 @@ export default {
      },1000)
     },
     getData: function() {
-      let start = (this.pageNum - 1) * this.page.pageSize;
+      let start = (this.page.pageNum - 1) * this.page.pageSize;
       let end = start + this.page.pageSize;
       if (end > this.page.totalCount) {
         end = this.page.totalCount;

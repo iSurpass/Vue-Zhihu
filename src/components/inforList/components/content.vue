@@ -68,7 +68,7 @@
 <script>
 export default {
   name: "Content1",
-  props:["zhihu",],
+  props:["zhihu"],
    computed: {
     formatStars: function() {
       if (this.zhihu.stars >= 1000) {
@@ -98,13 +98,6 @@ export default {
 }
 .level {
   margin: 6px;
-}
-.desktop {
-  width: 100%;
-  height: 667px;
-  position: absolute;
-  top: 0;
-  background-color: rgb(240, 240, 240);
 }
 .content {
   margin: 7px;

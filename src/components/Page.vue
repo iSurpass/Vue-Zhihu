@@ -1,9 +1,8 @@
 <template>
   <div class="desktop">
-    <div class="has-text-centered" v-show="refreshMoring">
-      正在努力刷新中~~
-    </div>
-    <Content1 v-for="item in page.zhihus" :key="item.index" :zhihu="item"></Content1>
+    <pull-to :top-load-method="refresh">
+      <Content1 v-for="item in page.zhihus" :key="item.index" :zhihu="item"></Content1>
+    </pull-to>
     <div class="has-text-centered" v-show="loadMoring">
       正在加载...
     </div>
@@ -13,6 +12,7 @@
 <script>
 import Content1 from "./inforList/components/content.vue";
 import Vue from 'vue';
+import PullTo from 'vue-pull-to'
 
 export default {
   name: "inforList",
@@ -37,7 +37,7 @@ export default {
       });
     }
     let updateData = [];
-    for(let i=0;i<5;i++){
+    for(let i=0;i<30;i++){
       updateData.push({
         index:100*i,
          about: "热门内容,来自:NBA体育",
@@ -63,6 +63,8 @@ export default {
       zhihus:zhihus,
       updateData:updateData,
       count:1,
+      top:-1,
+      bottom:-1,
       page: {
         totalCount: 0,
         totalPage: 0,
@@ -87,6 +89,12 @@ export default {
     this.getData();
   },
   methods: {
+    refresh(loaded) {
+        setTimeout(() => {
+          this.refreshData();
+          loaded('done');
+        }, 2000);
+      },
     scrollFn:function(){
       let pageHeight = Math.max(
         document.body.scrollHeight,
@@ -105,8 +113,6 @@ export default {
       let position = pageHeight - viewHeight - scrollHeight;
       if(position < 20){
         this.nextPageData();
-      }else if(position<3260){
-        this.refreshData();
       }
     },
     refreshData:function(){
@@ -117,10 +123,8 @@ export default {
       let updateData = this.updateData[this.count];
       this.page.zhihus.unshift(updateData);
       this.count++;
-      setTimeout(()=>function(){
         this.getData();
         this.refreshing = false;
-      },1000)
     },
     nextPageData:function(){
       if(this.page.pageNum===this.page.totalPage){
@@ -152,7 +156,7 @@ export default {
     }
   },
   components: {
-    Content1
+    Content1,PullTo
   }
 };
 </script>
